@@ -11,6 +11,11 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest'
   },
+  globals: {
+    ElMessage: 'readonly',
+    ElMessageBox: 'readonly',
+    ElLoading: 'readonly'
+  },
   rules: {
     'prettier/prettier': [
       'warn',
