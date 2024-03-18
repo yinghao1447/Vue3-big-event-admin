@@ -21,9 +21,15 @@ onMounted(() => {
 
 const handleCommand = (command) => {
   if (command === 'logout') {
-    userStore.setUser({})
-    userStore.removeToken()
-    router.push('/login')
+    ElMessageBox.confirm('你确认要退出吗', '温馨提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      userStore.setUser('')
+      userStore.removeToken()
+      router.push('/login')
+    })
   } else {
     router.push(`/user/${command}`)
   }
