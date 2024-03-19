@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { artAddArticleService, artEditArticleService } from '@/api/article'
+import { artAddChannelService, artEditChannelService } from '@/api/article'
 const dialogVisible = ref(false)
 const formModel = ref({
   cate_name: '',
@@ -30,10 +30,10 @@ const onSubmit = async () => {
   await formRef.value.validate()
   const isEdit = formModel.value.id
   if (isEdit) {
-    await artEditArticleService(formModel.value)
+    await artEditChannelService(formModel.value)
     emit('success')
   } else {
-    await artAddArticleService(formModel.value)
+    await artAddChannelService(formModel.value)
   }
   dialogVisible.value = false
   emit('success')
