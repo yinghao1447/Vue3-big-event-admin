@@ -4,17 +4,34 @@ import ChannelSelect from './ChannelSelect.vue'
 import { Plus } from '@element-plus/icons-vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import { artAddService } from '@/api/article'
+import { artAddService, artGetDetailService, artEditService } from '@/api/article'
+import { baseURL } from '@/utils/request'
 import { ElMessage } from 'element-plus'
+import axios from 'axios'
 const title = ref('')
 const visibleDrawer = ref(false)
 const imageUrl = ref('')
 const formRef = ref()
 const editRef = ref()
+const defaultFromData = {
+  title: '',
+  cate_id: '',
+  cover_img: '',
+  content: '',
+  state: ''
+}
+const formModel = ref({ ...defaultFromData })
 const open = async (row) => {
   visibleDrawer.value = true
   if (row.id) {
     title.value = '编辑文章'
+    const {
+      data: { data }
+    } = await artGetDetailService(row.id)
+    formModel.value = data
+    imageUrl.value = baseURL + data.cover_img
+    const file = await urlToFile(imageUrl.value, formModel.value.cover_img)
+    formModel.value.cover_img = file
   } else {
     title.value = '添加文章'
     await nextTick(() => {
@@ -24,14 +41,7 @@ const open = async (row) => {
     })
   }
 }
-const defaultFromData = {
-  title: '',
-  cate_id: '',
-  cover_img: '',
-  content: '',
-  state: ''
-}
-const formModel = ref({ ...defaultFromData })
+
 const selectFile = (file) => {
   imageUrl.value = URL.createObjectURL(file.raw)
   formModel.value.cover_img = file.raw
@@ -56,11 +66,33 @@ const onPublish = async (state) => {
   }
   if (formModel.value.id) {
     console.log('编辑')
+    await artEditService(fd)
+    ElMessage.success('编辑成功')
+    emit('success', 'edit')
+    visibleDrawer.value = false
   } else {
     await artAddService(fd)
     ElMessage.success('添加成功')
     emit('success', 'add')
     visibleDrawer.value = false
+  }
+}
+async function urlToFile(url, fileName) {
+  try {
+    const response = await axios.get(url, {
+      responseType: 'blob' // 设置响应类型为 Blob
+    })
+
+    // 获取图片的 Blob 对象
+    const blob = response.data
+
+    // 创建一个新的File对象
+    const file = new File([blob], fileName, { type: blob.type })
+
+    return file
+  } catch (error) {
+    console.error('下载图片失败:', error)
+    throw error
   }
 }
 

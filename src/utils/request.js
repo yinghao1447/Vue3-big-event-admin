@@ -37,7 +37,7 @@ instance.interceptors.response.use(
   },
   (error) => {
     // 超出 2xx 范围的状态码都会触发该函数。
-    if (error.response?.state === 401) {
+    if (error.response?.status === 401) {
       router.push('/login')
     }
     ElMessage.error(error.response.data.message || '服务器异常')
@@ -47,3 +47,4 @@ instance.interceptors.response.use(
 )
 
 export default instance
+export { baseURL }

@@ -3,7 +3,7 @@ import { Delete, Edit } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import ChannelSelect from './components/ChannelSelect.vue'
 import ArticleEdit from './components/ArticleEdit.vue'
-import { artGetListService } from '@/api/article'
+import { artGetListService, artDelService } from '@/api/article'
 import { formatTime } from '@/utils/format'
 const articleList = ref([])
 const defaultParams = {
@@ -25,6 +25,15 @@ const onAddArticle = () => {
 }
 const onDelArticle = (row) => {
   console.log(row)
+
+  ElMessageBox.confirm('确定删除该文章吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    await artDelService(row.id)
+    getArticleList()
+  })
 }
 const getArticleList = async () => {
   loading.value = true
@@ -55,8 +64,6 @@ const onSuccess = (type) => {
   if (type === 'add') {
     const lastPage = Math.ceil(total.value / params.value.pagesize)
     params.value.pagenum = lastPage
-  } else {
-    console.log('编辑')
   }
   getArticleList()
 }
